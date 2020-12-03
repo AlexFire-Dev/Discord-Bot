@@ -1,18 +1,19 @@
-import time
+import time                                                 # Импорт библиотек
+import discord
 from discord.ext import commands
 import os
 
 
-BOT_TOKEN = os.getenv("BOT_TOKEN")
+BOT_TOKEN = os.getenv("BOT_TOKEN")                          # Создание глобальных переменных
 client = commands.Bot(command_prefix='!')
 
 
-@client.event
+@client.event                                               # Включение бота
 async def on_ready():
     print('We have logged in as {0.user}'.format(client))
 
 
-@client.command()
+@client.command()                                           # Команда "!clear"
 @commands.has_permissions(manage_messages=True)
 async def clear(ctx, amount=None):
     if amount:
@@ -34,6 +35,18 @@ async def clear_error(ctx, error):
         await ctx.send(f"{author.mention}, у Вас недостаточно прав для использования этой команды!\nНедостающее право: Управлять сообщениями")
         time.sleep(1)
         await ctx.channel.purge(limit=1)
+
+
+@client.command()                                           # Команда "!kick"
+@commands.has_permissions(administrator=True)
+async def kick(ctx, username: discord.User):
+    pass
+
+
+@client.event                                               # Исключатель ошибки "Неизвестная команда"
+async def on_command_error(ctx, error):
+    if isinstance(error, commands.CommandNotFound):
+        pass
 
 
 client.run(BOT_TOKEN)
