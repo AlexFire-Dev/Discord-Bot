@@ -5,7 +5,8 @@ import os
 
 
 BOT_TOKEN = os.getenv("BOT_TOKEN")                          # Создание глобальных переменных
-client = commands.Bot(command_prefix='!')
+COMMAND_PREFIX = os.getenv("COMMAND_PREFIX")
+client = commands.Bot(command_prefix=COMMAND_PREFIX)
 
 
 @client.event                                               # Включение бота
@@ -39,8 +40,22 @@ async def clear_error(ctx, error):
 
 @client.command()                                           # Команда "!kick"
 @commands.has_permissions(administrator=True)
-async def kick(ctx, username: discord.User):
-    pass
+async def kick(ctx, username: discord.Member, *, reason="No reason provided"):
+    await username.kick(reason=reason)
+    await ctx.channel.purge(limit=1)
+    await ctx.send(f"Я удалил пользователя {username.mention}, Sir!")
+    time.sleep(1)
+    await ctx.channel.purge(limit=1)
+
+
+@kick.error
+async def kick_error(ctx, error):
+    await ctx.channel.purge(limit=1)
+    author = ctx.message.author
+    if isinstance(error, commands.MissingPermissions):
+        await ctx.send(f"{author.mention}, у Вас недостаточно прав для использования этой команды!\nНедостающее право: Управлять сообщениями")
+        time.sleep(1)
+        await ctx.channel.purge(limit=1)
 
 
 @client.event                                               # Исключатель ошибки "Неизвестная команда"
