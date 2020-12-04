@@ -1,4 +1,5 @@
 import time                                                 # Импорт библиотек
+import datetime
 import discord
 from discord.ext import commands
 import os
@@ -105,12 +106,12 @@ async def ban_error(ctx, error):
         return
 
 
-@client.event                                               # Исключатель ошибки "Неизвестная команда"
+@client.event                                               # Исключатель ошибки "Неизвестная команда" + логи в консоль
 async def on_command_error(ctx, error):
     if isinstance(error, commands.CommandNotFound):
         pass
     else:
-        print(error)
+        print(datetime.datetime.now(datetime.timezone(datetime.timedelta(hours=3))), ':', ctx.message.author, ':', error)
 
 
 client.run(BOT_TOKEN)
