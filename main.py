@@ -55,22 +55,50 @@ async def kick_error(ctx, error):
     await ctx.channel.purge(limit=1)
     author = ctx.message.author
     if isinstance(error, commands.MissingPermissions):
-        await ctx.send(f"{author.mention}, у Вас недостаточно прав для использования этой команды!\nНедостающее право: Управлять сообщениями")
+        await ctx.send(f"{author.mention}, у Вас недостаточно прав для использования этой команды!\nНедостающее право: Выгонять пользователей")
         time.sleep(1)
         await ctx.channel.purge(limit=1)
         return
     elif isinstance(error, commands.MissingRequiredArgument):
-        await ctx.send(f"{author.mention}, вы неверно ввели комманду!")
-        time.sleep(1)
-        await ctx.channel.purge(limit=1)
-        return
-    elif isinstance(error, commands.BotMissingPermissions):
-        await ctx.send(f"{author.mention}, вы не можете удалить")
+        await ctx.send(f"{author.mention}, вы неверно ввели аргументы комманды!")
         time.sleep(1)
         await ctx.channel.purge(limit=1)
         return
     else:
-        await ctx.send(f"{author.mention}, вы ввели комманду неверно!\nВоспользуйтесь !help")
+        await ctx.send(f"{author.mention}, вы ввели комманду неверно!\nВоспользуйтесь !helpme")
+        time.sleep(1.25)
+        await ctx.channel.purge(limit=1)
+        return
+
+
+@client.command()                                           # Команда "!ban"
+@commands.has_permissions(administrator=True)
+async def ban(ctx, username: discord.Member, *, reason=None):
+    if reason is None:
+        reason = "No reason provided"
+    await ctx.guild.ban(username, reason=reason)
+    await ctx.channel.purge(limit=1)
+    await ctx.send(f"Я ЗАБАНИЛ пользователя {username.mention}, Sir!")
+    time.sleep(1.25)
+    await ctx.channel.purge(limit=1)
+
+
+@ban.error
+async def kick_error(ctx, error):
+    await ctx.channel.purge(limit=1)
+    author = ctx.message.author
+    if isinstance(error, commands.MissingPermissions):
+        await ctx.send(f"{author.mention}, у Вас недостаточно прав для использования этой команды!\nНедостающее право: Банить пользователей")
+        time.sleep(1)
+        await ctx.channel.purge(limit=1)
+        return
+    elif isinstance(error, commands.MissingRequiredArgument):
+        await ctx.send(f"{author.mention}, вы неверно ввели аргументы комманды!")
+        time.sleep(1)
+        await ctx.channel.purge(limit=1)
+        return
+    else:
+        await ctx.send(f"{author.mention}, вы ввели комманду неверно!\nВоспользуйтесь !helpme")
         time.sleep(1.25)
         await ctx.channel.purge(limit=1)
         return
@@ -80,6 +108,8 @@ async def kick_error(ctx, error):
 async def on_command_error(ctx, error):
     if isinstance(error, commands.CommandNotFound):
         pass
+    else:
+        print(error)
 
 
 client.run(BOT_TOKEN)
