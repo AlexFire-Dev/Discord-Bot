@@ -23,6 +23,7 @@ async def clear(ctx, amount=None):
     else:
         amount = 2
         await ctx.channel.purge(limit=amount)
+    print(1)
     await ctx.send(f"Я удалил {amount-1} сообщений, Sir!")
     time.sleep(1)
     await ctx.channel.purge(limit=1)
@@ -84,7 +85,7 @@ async def ban(ctx, username: discord.Member, *, reason=None):
 
 
 @ban.error
-async def kick_error(ctx, error):
+async def ban_error(ctx, error):
     await ctx.channel.purge(limit=1)
     author = ctx.message.author
     if isinstance(error, commands.MissingPermissions):
