@@ -40,7 +40,9 @@ async def clear_error(ctx, error):
 
 @client.command()                                           # Команда "!kick"
 @commands.has_permissions(administrator=True)
-async def kick(ctx, username: discord.Member, *, reason="No reason provided"):
+async def kick(ctx, username: discord.Member, *, reason=None):
+    if reason is None:
+        reason = "No reason provided"
     await username.kick(reason=reason)
     await ctx.channel.purge(limit=1)
     await ctx.send(f"Я удалил пользователя {username.mention}, Sir!")
@@ -54,6 +56,10 @@ async def kick_error(ctx, error):
     author = ctx.message.author
     if isinstance(error, commands.MissingPermissions):
         await ctx.send(f"{author.mention}, у Вас недостаточно прав для использования этой команды!\nНедостающее право: Управлять сообщениями")
+        time.sleep(1)
+        await ctx.channel.purge(limit=1)
+    elif isinstance(error, commands.MissingRequiredArgument):
+        await ctx.send(f"{author.mention}, вы неверно ввели комманду!")
         time.sleep(1)
         await ctx.channel.purge(limit=1)
 
