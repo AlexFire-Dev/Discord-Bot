@@ -58,10 +58,22 @@ async def kick_error(ctx, error):
         await ctx.send(f"{author.mention}, у Вас недостаточно прав для использования этой команды!\nНедостающее право: Управлять сообщениями")
         time.sleep(1)
         await ctx.channel.purge(limit=1)
+        return
     elif isinstance(error, commands.MissingRequiredArgument):
         await ctx.send(f"{author.mention}, вы неверно ввели комманду!")
         time.sleep(1)
         await ctx.channel.purge(limit=1)
+        return
+    elif isinstance(error, commands.BotMissingPermissions):
+        await ctx.send(f"{author.mention}, вы не можете удалить")
+        time.sleep(1)
+        await ctx.channel.purge(limit=1)
+        return
+    else:
+        await ctx.send(f"{author.mention}, вы ввели комманду неверно!\nВоспользуйтесь !help")
+        time.sleep(1.25)
+        await ctx.channel.purge(limit=1)
+        return
 
 
 @client.event                                               # Исключатель ошибки "Неизвестная команда"
