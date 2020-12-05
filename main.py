@@ -15,7 +15,7 @@ async def on_ready():
     print('We have logged in as {0.user}'.format(client))
 
 
-@client.command()                                           # Команда "!clear"
+@client.command()                                           # Команда "clear"
 @commands.has_permissions(manage_messages=True)
 async def clear(ctx, amount=None):
     if amount:
@@ -40,7 +40,7 @@ async def clear_error(ctx, error):
         await ctx.channel.purge(limit=1)
 
 
-@client.command()                                           # Команда "!kick"
+@client.command()                                           # Команда "kick"
 @commands.has_permissions(administrator=True)
 async def kick(ctx, username: discord.Member, *, reason=None):
     if reason is None:
@@ -73,7 +73,7 @@ async def kick_error(ctx, error):
         return
 
 
-@client.command()                                           # Команда "!ban"
+@client.command()                                           # Команда "ban"
 @commands.has_permissions(administrator=True)
 async def ban(ctx, username: discord.Member, *, reason=None):
     if reason is None:
@@ -104,6 +104,22 @@ async def ban_error(ctx, error):
         time.sleep(1.25)
         await ctx.channel.purge(limit=1)
         return
+
+
+@client.command()                                           # Комманда "mute"
+@commands.has_permissions(administrator=True)
+async def mute(ctx, username: discord.Member):
+    author = ctx.message.author
+    await ctx.channel.purge(limit=1)
+    if username.guild_permissions.administrator:
+        await ctx.send(f"{author.mention}, вы не можете замутить BOSS OF THIS GYM!")
+        time.sleep(1.25)
+        await ctx.channel.purge(limit=1)
+        return
+    else:
+        role = discord.utils.get(ctx.guild.roles, name="Muted")
+        await username.add_roles(role)
+        await ctx.send(f"{author.mention}, пользователь {username.mention} замучен!")
 
 
 @client.event                                               # Исключатель ошибки "Неизвестная команда" + логи в консоль
