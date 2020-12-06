@@ -15,6 +15,16 @@ async def on_ready():
     print('We have logged in as {0.user}'.format(client))
 
 
+@client.command()                                           # Комманда "helpme"
+async def helpme(ctx):
+    await ctx.send(f'{ctx.message.author.mention}'
+                   f'\n1. clear(число) - удаляет заданное число сообщений'
+                   f'\n2. kick [пользователь] (причина)  - удаляет пользователя с сервера'
+                   f'\n3. ban [пользователь] (причина)   - блокирует пользователю доступ к серверу'
+                   f'\n\n* [] - обязательный аргумент'
+                   f'\n* () - необязательный аргумент')
+
+
 @client.command()                                           # Команда "clear"
 @commands.has_permissions(manage_messages=True)
 async def clear(ctx, amount=None):
@@ -67,7 +77,7 @@ async def kick_error(ctx, error):
         await ctx.channel.purge(limit=1)
         return
     else:
-        await ctx.send(f"{author.mention}, вы ввели комманду неверно!\nВоспользуйтесь !helpme")
+        await ctx.send(f"{author.mention}, вы ввели комманду неверно!\nВоспользуйтесь {COMMAND_PREFIX}helpme")
         time.sleep(1.25)
         await ctx.channel.purge(limit=1)
         return
@@ -100,8 +110,43 @@ async def ban_error(ctx, error):
         await ctx.channel.purge(limit=1)
         return
     else:
-        await ctx.send(f"{author.mention}, вы ввели комманду неверно!\nВоспользуйтесь !helpme")
+        await ctx.send(f"{author.mention}, вы ввели комманду неверно!\nВоспользуйтесь {COMMAND_PREFIX}helpme")
         time.sleep(1.25)
+        await ctx.channel.purge(limit=1)
+        return
+
+
+@client.command()                                           # Комманда "unban"
+@commands.has_permissions(administrator=True)
+async def unban(ctx, *, member ):
+    banned_users = await ctx.guild.bans()
+    member_name,member_discriminator = member.split('#')
+
+    for ban_entry in banned_users:
+        user = ban_entry.user
+        if (user.name, user.discriminator) == (member_name,member_discriminator):
+            await ctx.guild.unban(user)
+            await ctx.send(f'Unbanned {user.mention}')
+            return
+
+
+@unban.error
+async def unban_error(ctx, error):
+    await ctx.channel.purge(limit=1)
+    author = ctx.message.author
+    if isinstance(error, commands.MissingPermissions):
+        await ctx.send(f"{author.mention}, у Вас недостаточно прав для использования этой команды!\nНедостающее право: Разбанивать пользователей")
+        time.sleep(5)
+        await ctx.channel.purge(limit=1)
+        return
+    elif isinstance(error, commands.MissingRequiredArgument):
+        await ctx.send(f"{author.mention}, вы неверно ввели аргументы команды!")
+        time.sleep(5)
+        await ctx.channel.purge(limit=1)
+        return
+    else:
+        await ctx.send(f"{author.mention}, вы ввели команду неверно!\nВоспользуйтесь {COMMAND_PREFIX}helpme")
+        time.sleep(5)
         await ctx.channel.purge(limit=1)
         return
 
