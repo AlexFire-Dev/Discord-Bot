@@ -1,9 +1,8 @@
 import time                                                 # Импорт библиотек
-import datetime
 import discord
 from discord.ext import commands
 import os
-
+import datetime
 
 BOT_TOKEN = os.getenv("BOT_TOKEN")                          # Создание глобальных переменных
 COMMAND_PREFIX = os.getenv("COMMAND_PREFIX")
@@ -24,7 +23,6 @@ async def clear(ctx, amount=None):
     else:
         amount = 2
         await ctx.channel.purge(limit=amount)
-    print(1)
     await ctx.send(f"Я удалил {amount-1} сообщений, Sir!")
     time.sleep(1)
     await ctx.channel.purge(limit=1)
@@ -42,9 +40,7 @@ async def clear_error(ctx, error):
 
 @client.command()                                           # Команда "kick"
 @commands.has_permissions(administrator=True)
-async def kick(ctx, username: discord.Member, *, reason=None):
-    if reason is None:
-        reason = "No reason provided"
+async def kick(ctx, username: discord.Member, *, reason="No reason provided"):
     await username.kick(reason=reason)
     await ctx.channel.purge(limit=1)
     await ctx.send(f"Я удалил пользователя {username.mention}, Sir!")
@@ -57,21 +53,23 @@ async def kick_error(ctx, error):
     await ctx.channel.purge(limit=1)
     author = ctx.message.author
     if isinstance(error, commands.MissingPermissions):
-        await ctx.send(f"{author.mention}, у Вас недостаточно прав для использования этой команды!\nНедостающее право: Выгонять пользователей")
+        await ctx.send(f"{author.mention}, у Вас недостаточно прав для использования этой команды!\nНедостающее право: Управлять сообщениями")
         time.sleep(1)
         await ctx.channel.purge(limit=1)
-        return
-    elif isinstance(error, commands.MissingRequiredArgument):
-        await ctx.send(f"{author.mention}, вы неверно ввели аргументы комманды!")
-        time.sleep(1)
-        await ctx.channel.purge(limit=1)
-        return
-    else:
-        await ctx.send(f"{author.mention}, вы ввели комманду неверно!\nВоспользуйтесь !helpme")
-        time.sleep(1.25)
-        await ctx.channel.purge(limit=1)
-        return
 
+
+@client.event                                               # Исключатель ошибки "Неизвестная команда"
+async def on_command_error(ctx, error):
+    if isinstance(error, commands.CommandNotFound):
+        pass
+@client.command()
+async def helpme(ctx):
+    await ctx.send(f'{ctx.message.author.mention}'
+                   f'\n1. clear(число) - удаляет заданное число сообщений'
+                   f'\n2. kick [пользователь] (причина)  - удаляет пользователя с сервера'
+                   f'\n3. ban [пользователь] (причина)   - блокирует пользователю доступ к серверу'
+                   f'\n\n* [] - обязательный аргумент'
+                   f'\n* () - необязательный аргумент')
 
 @client.command()                                           # Команда "ban"
 @commands.has_permissions(administrator=True)
@@ -129,5 +127,53 @@ async def on_command_error(ctx, error):
     else:
         print(datetime.datetime.now(datetime.timezone(datetime.timedelta(hours=3))), ':', ctx.message.author, ':', error)
 
+@client.command()
+@commands.has_permissions(administrator=True)
+async def unban(ctx, *, member ):
+    banned_users = await ctx.guild.bans()
+    member_name,member_discriminator = member.split('#')
+
+    for ban_entry in banned_users:
+        user = ban_entry.user
+        if (user.name, user.discriminator) == (member_name,member_discriminator):
+            await ctx.guild.unban(user)
+            await ctx.send(f'Unbanned {user.mention}')
+            return
+
+@unban.error
+async def unban_error(ctx, error):
+    await ctx.channel.purge(limit=1)
+    author = ctx.message.author
+    if isinstance(error, commands.MissingPermissions):
+        await ctx.send(f"{author.mention}, у Вас недостаточно прав для использования этой команды!\nНедостающее право: Банить пользователей")
+        time.sleep(5)
+        await ctx.channel.purge(limit=1)
+        return
+    elif isinstance(error, commands.MissingRequiredArgument):
+        await ctx.send(f"{author.mention}, вы неверно ввели аргументы команды!")
+        time.sleep(5)
+        await ctx.channel.purge(limit=1)
+        return
+    else:
+        await ctx.send(f"{author.mention}, вы ввели команду неверно!\nВоспользуйтесь !helpme")
+        time.sleep(5)
+        await ctx.channel.purge(limit=1)
+        return
+@client.event  # Исключатель ошибки "Неизвестная команда" + логи в консоль
+async def on_command_error(ctx, error):
+    if isinstance(error, commands.CommandNotFound):
+        pass
+    else:
+        print(datetime.datetime.now(datetime.timezone(datetime.timedelta(hours=3))), ':', ctx.message.author, ':',error)
+
+@client.command()
+async def sucker(ctx):
+    await ctx.send('Да, это я!')
+@client.command()
+async def Sucker(ctx):
+    await ctx.send('Да, это я!')
+@client.command()
+async def fuck(ctx):
+    await ctx.send('Okey, lets go')
 
 client.run(BOT_TOKEN)
