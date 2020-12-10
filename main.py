@@ -1,17 +1,11 @@
 import discord                                                              # Импорт библиотек
+from discord import Member
 import os
 import time
 
 BOT_TOKEN = os.getenv("BOT_TOKEN")                                          # Создание глобальных переменных
 COMMAND_PREFIX = os.getenv("COMMAND_PREFIX")
 client = discord.Client()
-
-
-async def kick(message, member: discord.Member, reason):
-    await member.kick(reason=reason)
-    await message.channel.send(f"Пользователь {member.mention} кикнут!")
-    time.sleep(1.25)
-    await message.channel.purge(limit=1)
 
 
 @client.event                                                               # Включение бота
@@ -65,7 +59,8 @@ async def on_message(message):
 
         if message.author.guild_permissions.administrator:
             try:
-                member = msg[1]
+                member: Member = discord.utils.find(lambda m: msg[1] in m.name, message.guild.members)
+                print(member)
 
                 try:
                     reason = msg[2]
@@ -73,10 +68,10 @@ async def on_message(message):
                 except:
                     reason = "Причина не указана"
 
-                await kick(message, member, reason)
+                await member.kick(reason=reason)
 
             except:
-                message.channel.send(f"{message.author.mention}, вы ввели команду неверно, воспользуйтесь {COMMAND_PREFIX}help")
+                await message.channel.send(f"{message.author.mention}, вы ввели команду неверно, воспользуйтесь {COMMAND_PREFIX}help")
 
         else:
             await message.channel.send('У вас нет прав!')
