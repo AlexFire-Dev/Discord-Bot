@@ -1,2 +1,2 @@
 worker: python main.py
-worker: python mainnew.py
+workerold: python mainnew.py
