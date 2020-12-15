@@ -36,7 +36,6 @@ async def clear(ctx, amount=None):
     else:
         amount = 2
         await ctx.channel.purge(limit=amount)
-    print(1)
     await ctx.send(f"Я удалил {amount-1} сообщений, Sir!")
     time.sleep(1)
     await ctx.channel.purge(limit=1)
@@ -171,10 +170,12 @@ async def mute(ctx, username: discord.Member):
 
 # Музыкальные комманды
 @client.command()                                           # Комманда "join"
+@commands.has_permissions(administrator=True)
 async def join(ctx):
+    ctx.channel.purge(limit=1)
     channel = ctx.message.author.voice.channel
     if not channel:
-        await ctx.send("You are not connected to a voice channel")
+        await ctx.send("Вы не в голосовом канале!")
         return
     voice = get(client.voice_clients, guild=ctx.guild)
     if voice and voice.is_connected():
@@ -186,18 +187,40 @@ async def join(ctx):
         await voice.move_to(channel)
     else:
         voice = await channel.connect()
-    await ctx.send(f"Joined {channel}")
+    await ctx.send(f"Я присоединился к {channel}, Sir!")
+
+
+@join.error
+async def join_error(ctx, error):
+    await ctx.channel.purge(limit=1)
+    author = ctx.message.author
+    if isinstance(error, commands.MissingPermissions):
+        await ctx.send(f"{author.mention}, у Вас недостаточно прав для использования этой команды!\nНедостающее право: Доступ к управлению музыкой!")
+        time.sleep(1)
+        await ctx.channel.purge(limit=1)
 
 
 @client.command()                                           # Комманда "leave"
+@commands.has_permissions(administrator=True)
 async def leave(ctx):
+    ctx.channel.purge(limit=1)
     channel = ctx.message.author.voice.channel
     voice = get(client.voice_clients, guild=ctx.guild)
     if voice and voice.is_connected():
         await voice.disconnect()
-        await ctx.send(f"Left {channel}")
+        await ctx.send(f"Я покинул {channel}")
     else:
-        await ctx.send("Don't think I am in a voice channel")
+        await ctx.send("Я не думаю, что я в голосовом канале!")
+
+
+@leave.error
+async def join_error(ctx, error):
+    await ctx.channel.purge(limit=1)
+    author = ctx.message.author
+    if isinstance(error, commands.MissingPermissions):
+        await ctx.send(f"{author.mention}, у Вас недостаточно прав для использования этой команды!\nНедостающее право: Доступ к управлению музыкой!")
+        time.sleep(1)
+        await ctx.channel.purge(limit=1)
 
 
 @client.event                                               # Исключатель ошибки "Неизвестная команда" + логи в консоль
