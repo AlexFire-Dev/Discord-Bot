@@ -2,6 +2,7 @@ import time                                                 # Импорт би�
 import datetime
 import discord
 from discord.ext import commands
+from discord.utils import get
 import os
 
 
@@ -25,6 +26,7 @@ async def helpme(ctx):
                    f'\n* () - необязательный аргумент')
 
 
+# Модерационные комманды
 @client.command()                                           # Команда "clear"
 @commands.has_permissions(manage_messages=True)
 async def clear(ctx, amount=None):
@@ -165,6 +167,37 @@ async def mute(ctx, username: discord.Member):
         role = discord.utils.get(ctx.guild.roles, name="Muted")
         await username.add_roles(role)
         await ctx.send(f"{author.mention}, пользователь {username.mention} замучен!")
+
+
+# Музыкальные комманды
+@client.command()                                           # Комманда "join"
+async def join(ctx):
+    channel = ctx.message.author.voice.channel
+    if not channel:
+        await ctx.send("You are not connected to a voice channel")
+        return
+    voice = get(client.voice_clients, guild=ctx.guild)
+    if voice and voice.is_connected():
+        await voice.move_to(channel)
+    else:
+        voice = await channel.connect()
+    await voice.disconnect()
+    if voice and voice.is_connected():
+        await voice.move_to(channel)
+    else:
+        voice = await channel.connect()
+    await ctx.send(f"Joined {channel}")
+
+
+@client.command()                                           # Комманда "leave"
+async def leave(ctx):
+    channel = ctx.message.author.voice.channel
+    voice = get(client.voice_clients, guild=ctx.guild)
+    if voice and voice.is_connected():
+        await voice.disconnect()
+        await ctx.send(f"Left {channel}")
+    else:
+        await ctx.send("Don't think I am in a voice channel")
 
 
 @client.event                                               # Исключатель ошибки "Неизвестная команда" + логи в консоль
