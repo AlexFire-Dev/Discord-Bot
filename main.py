@@ -8,7 +8,7 @@ import os
 
 BOT_TOKEN = os.getenv("BOT_TOKEN")                          # Создание глобальных переменных
 COMMAND_PREFIX = os.getenv("COMMAND_PREFIX")
-client = commands.Bot(command_prefix=COMMAND_PREFIX)
+client = commands.Bot(command_prefix=COMMAND_PREFIX, help_command=None)
 
 
 @client.event                                               # Включение бота
@@ -16,14 +16,20 @@ async def on_ready():
     print('We have logged in as {0.user}'.format(client))
 
 
-@client.command()                                           # Комманда "helpme"
-async def helpme(ctx):
-    await ctx.send(f'{ctx.message.author.mention}'
-                   f'\n1. clear(число) - удаляет заданное число сообщений'
-                   f'\n2. kick [пользователь] (причина)  - удаляет пользователя с сервера'
-                   f'\n3. ban [пользователь] (причина)   - блокирует пользователю доступ к серверу'
-                   f'\n\n* [] - обязательный аргумент'
-                   f'\n* () - необязательный аргумент')
+@client.command()                                           # Команда "help"
+async def help(ctx):
+    await ctx.channel.purge(limit=1)
+    embed = discord.Embed(title="help", description=" ", color=0xff0000)
+    embed.add_field(name="Модерация сервера", value="Модерационные команды:", inline=False)
+    embed.add_field(name="clear (число)", value="Удаляет заданное число сообщений", inline=False)
+    embed.add_field(name="kick [пользователь] (причина)", value="Удаляет пользователя с сервера", inline=False)
+    embed.add_field(name="ban [пользователь] (причина)", value="Блокирует пользователю доступ к серверу", inline=False)
+    embed.add_field(name="unban [пользователь]", value="Разблокирует пользователю доступ к серверу", inline=False)
+    embed.add_field(name="Управление музыкой", value="Музыкальные команды:", inline=False)
+    embed.add_field(name="join", value="Подключает бота к голосовому каналу", inline=True)
+    embed.add_field(name="leave", value="Отключает бота от голосового канала", inline=True)
+    embed.set_footer(text="[] - обязательный аргумент, () - необязательный аргумент")
+    await ctx.send(embed=embed)
 
 
 # Модерационные комманды
@@ -152,7 +158,7 @@ async def unban_error(ctx, error):
         return
 
 
-@client.command()                                           # Комманда "mute"
+@client.command()                                           # Комманда "mute" [НЕ РАБОТАЕТ]
 @commands.has_permissions(administrator=True)
 async def mute(ctx, username: discord.Member):
     author = ctx.message.author
@@ -172,7 +178,7 @@ async def mute(ctx, username: discord.Member):
 @client.command()                                           # Комманда "join"
 @commands.has_permissions(administrator=True)
 async def join(ctx):
-    ctx.channel.purge(limit=1)
+    await ctx.channel.purge(limit=1)
     channel = ctx.message.author.voice.channel
     if not channel:
         await ctx.send("Вы не в голосовом канале!")
@@ -203,7 +209,7 @@ async def join_error(ctx, error):
 @client.command()                                           # Комманда "leave"
 @commands.has_permissions(administrator=True)
 async def leave(ctx):
-    ctx.channel.purge(limit=1)
+    await ctx.channel.purge(limit=1)
     channel = ctx.message.author.voice.channel
     voice = get(client.voice_clients, guild=ctx.guild)
     if voice and voice.is_connected():
