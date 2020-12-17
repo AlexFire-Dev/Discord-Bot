@@ -19,17 +19,22 @@ async def on_ready():
 @client.command()                                           # Команда "help"
 async def help(ctx):
     await ctx.channel.purge(limit=1)
-    embed = discord.Embed(title="help", description=" ", color=0xff0000)
-    embed.add_field(name="Модерация сервера", value="Модерационные команды:", inline=False)
-    embed.add_field(name="clear (число)", value="Удаляет заданное число сообщений", inline=False)
-    embed.add_field(name="kick [пользователь] (причина)", value="Удаляет пользователя с сервера", inline=False)
-    embed.add_field(name="ban [пользователь] (причина)", value="Блокирует пользователю доступ к серверу", inline=False)
-    embed.add_field(name="unban [пользователь]", value="Разблокирует пользователю доступ к серверу", inline=False)
-    embed.add_field(name="Управление музыкой", value="Музыкальные команды:", inline=False)
-    embed.add_field(name="join", value="Подключает бота к голосовому каналу", inline=True)
-    embed.add_field(name="leave", value="Отключает бота от голосового канала", inline=True)
-    embed.set_footer(text="[] - обязательный аргумент, () - необязательный аргумент")
-    await ctx.send(embed=embed)
+    if ctx.message.author.guild_permissions.administrator:
+        embed = discord.Embed(title="help", description=" ", color=discord.Colour.blue())
+        embed.add_field(name="Модерация сервера", value="Модерационные команды:", inline=False)
+        embed.add_field(name="clear (число)", value="Удаляет заданное число сообщений", inline=False)
+        embed.add_field(name="kick [пользователь] (причина)", value="Удаляет пользователя с сервера", inline=False)
+        embed.add_field(name="ban [пользователь] (причина)", value="Блокирует пользователю доступ к серверу", inline=False)
+        embed.add_field(name="unban [пользователь]", value="Разблокирует пользователю доступ к серверу", inline=False)
+        embed.add_field(name="Управление музыкой", value="Музыкальные команды:", inline=False)
+        embed.add_field(name="join", value="Подключает бота к голосовому каналу", inline=True)
+        embed.add_field(name="leave", value="Отключает бота от голосового канала", inline=True)
+        embed.set_footer(text="[] - обязательный аргумент, () - необязательный аргумент")
+        await ctx.send(embed=embed)
+    else:
+        embed = discord.Embed(title="help", description=" ", color=discord.Colour.blue())
+        embed.set_footer(text="[] - обязательный аргумент, () - необязательный аргумент")
+        await ctx.send(embed=embed)
 
 
 # Модерационные комманды
@@ -42,8 +47,9 @@ async def clear(ctx, amount=None):
     else:
         amount = 2
         await ctx.channel.purge(limit=amount)
-    await ctx.send(f"Я удалил {amount-1} сообщений, Sir!")
-    time.sleep(1)
+    embed = discord.Embed(title=f"{COMMAND_PREFIX}clear", description=f"Удалено {amount-1} сообщений, Sir!", color=discord.Colour.green())
+    await ctx.send(embed=embed)
+    time.sleep(1.5)
     await ctx.channel.purge(limit=1)
 
 
