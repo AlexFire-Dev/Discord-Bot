@@ -17,24 +17,66 @@ async def on_ready():
 
 
 @client.command()                                           # Команда "help"
-async def help(ctx):
+async def help(ctx, value=None):
     await ctx.channel.purge(limit=1)
     if ctx.message.author.guild_permissions.administrator:
-        embed = discord.Embed(title="help", description=" ", color=discord.Colour.blue())
-        embed.add_field(name="Модерация сервера", value="Модерационные команды:", inline=False)
+        if value == "all":
+            embed = discord.Embed(title="help", description=" ", color=discord.Colour.blue())
+            embed.add_field(name="Модерация сервера", value="Модерационные команды:", inline=False)
+            embed.add_field(name="clear (число)", value="Удаляет заданное число сообщений", inline=False)
+            embed.add_field(name="kick [пользователь] (причина)", value="Удаляет пользователя с сервера", inline=False)
+            embed.add_field(name="ban [пользователь] (причина)", value="Блокирует пользователю доступ к серверу", inline=False)
+            embed.add_field(name="unban [пользователь]", value="Разблокирует пользователю доступ к серверу", inline=False)
+            embed.add_field(name="Управление музыкой", value="Музыкальные команды:", inline=False)
+            embed.add_field(name="join", value="Подключает бота к голосовому каналу", inline=True)
+            embed.add_field(name="leave", value="Отключает бота от голосового канала", inline=True)
+            embed.set_footer(text="[] - обязательный аргумент, () - необязательный аргумент")
+            await ctx.send(embed=embed)
+        elif value == "moderation":
+            embed = discord.Embed(title="help", description="Модерационные команды:", color=discord.Colour.blue())
+            embed.add_field(name="clear (число)", value="Удаляет заданное число сообщений", inline=False)
+            embed.add_field(name="kick [пользователь] (причина)", value="Удаляет пользователя с сервера", inline=False)
+            embed.add_field(name="ban [пользователь] (причина)", value="Блокирует пользователю доступ к серверу", inline=False)
+            embed.add_field(name="unban [пользователь]", value="Разблокирует пользователю доступ к серверу", inline=False)
+            embed.set_footer(text="[] - обязательный аргумент, () - необязательный аргумент")
+            await ctx.send(embed=embed)
+        elif value == "music":
+            embed = discord.Embed(title="help", description="Музыкальные команды:", color=discord.Colour.blue())
+            embed.add_field(name="join", value="Подключает бота к голосовому каналу", inline=False)
+            embed.add_field(name="leave", value="Отключает бота от голосового канала", inline=False)
+            embed.set_footer(text="[] - обязательный аргумент, () - необязательный аргумент")
+            await ctx.send(embed=embed)
+        elif value == "moderator":
+            embed = discord.Embed(title="help", description="Модерационные команды:", color=discord.Colour.blue())
+            embed.add_field(name="clear (число)", value="Удаляет заданное число сообщений", inline=False)
+            embed.set_footer(text="[] - обязательный аргумент, () - необязательный аргумент")
+            await ctx.send(embed=embed)
+        elif value == "user":
+            embed = discord.Embed(title="help", description=" ", color=discord.Colour.blue())
+            embed.add_field(name="У вас нет комманд", value="И прав тоже!", inline=False)
+            embed.set_footer(text="[] - обязательный аргумент, () - необязательный аргумент")
+            await ctx.send(embed=embed)
+        else:
+            embed = discord.Embed(title="help", description="Выберите нужный аргумент:")
+            embed.add_field(name="all", value="Показать все доступные команды", inline=False)
+            embed.add_field(name="moderation", value="Показать команды модерации", inline=False)
+            embed.add_field(name="music", value="Показать музыкальные команды", inline=False)
+            embed.add_field(name="moderator", value="Показать команды модератора", inline=False)
+            embed.add_field(name="user", value="Показать команды пользователя", inline=False)
+            await ctx.send(embed=embed)
+        return
+    elif ctx.message.author.guild_permissions.manage_messages:
+        embed = discord.Embed(title="help", description="Модерационные команды:", color=discord.Colour.blue())
         embed.add_field(name="clear (число)", value="Удаляет заданное число сообщений", inline=False)
-        embed.add_field(name="kick [пользователь] (причина)", value="Удаляет пользователя с сервера", inline=False)
-        embed.add_field(name="ban [пользователь] (причина)", value="Блокирует пользователю доступ к серверу", inline=False)
-        embed.add_field(name="unban [пользователь]", value="Разблокирует пользователю доступ к серверу", inline=False)
-        embed.add_field(name="Управление музыкой", value="Музыкальные команды:", inline=False)
-        embed.add_field(name="join", value="Подключает бота к голосовому каналу", inline=True)
-        embed.add_field(name="leave", value="Отключает бота от голосового канала", inline=True)
         embed.set_footer(text="[] - обязательный аргумент, () - необязательный аргумент")
         await ctx.send(embed=embed)
+        return
     else:
         embed = discord.Embed(title="help", description=" ", color=discord.Colour.blue())
+        embed.add_field(name="У вас нет комманд", value="И прав тоже!", inline=False)
         embed.set_footer(text="[] - обязательный аргумент, () - необязательный аргумент")
         await ctx.send(embed=embed)
+        return
 
 
 # Модерационные комманды
