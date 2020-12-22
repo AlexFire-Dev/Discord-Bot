@@ -13,7 +13,7 @@ client = commands.Bot(command_prefix=COMMAND_PREFIX, help_command=None)
 
 @client.event                                               # Включение бота
 async def on_ready():
-    print('We have logged in as {0.user}'.format(client))
+    print('Подключен бот {0.user}'.format(client))
 
 
 @client.command()                                           # Команда "help"
@@ -27,6 +27,8 @@ async def help(ctx, value=None):
             embed.add_field(name="kick [пользователь] (причина)", value="Удаляет пользователя с сервера", inline=False)
             embed.add_field(name="ban [пользователь] (причина)", value="Блокирует пользователю доступ к серверу", inline=False)
             embed.add_field(name="unban [пользователь]", value="Разблокирует пользователю доступ к серверу", inline=False)
+            embed.add_field(name="Ассистент сервера", value="Вспомогательные команды:", inline=False)
+            embed.add_field(name="spam [пользователь] [сообщение] (число)", value="Отправляет число сообщений с тэгами", inline=False)
             embed.add_field(name="Управление музыкой", value="Музыкальные команды:", inline=False)
             embed.add_field(name="join", value="Подключает бота к голосовому каналу", inline=True)
             embed.add_field(name="leave", value="Отключает бота от голосового канала", inline=True)
@@ -38,6 +40,11 @@ async def help(ctx, value=None):
             embed.add_field(name="kick [пользователь] (причина)", value="Удаляет пользователя с сервера", inline=False)
             embed.add_field(name="ban [пользователь] (причина)", value="Блокирует пользователю доступ к серверу", inline=False)
             embed.add_field(name="unban [пользователь]", value="Разблокирует пользователю доступ к серверу", inline=False)
+            embed.set_footer(text="[] - обязательный аргумент, () - необязательный аргумент")
+            await ctx.send(embed=embed)
+        elif value == "assistant":
+            embed = discord.Embed(title="help", description="Команды помошники:", color=discord.Colour.blue())
+            embed.add_field(name="spam [пользователь] [сообщение] (число)", value="Отправляет число сообщений с тэгами", inline=False)
             embed.set_footer(text="[] - обязательный аргумент, () - необязательный аргумент")
             await ctx.send(embed=embed)
         elif value == "music":
@@ -60,6 +67,7 @@ async def help(ctx, value=None):
             embed = discord.Embed(title="help", description="Выберите нужный аргумент:")
             embed.add_field(name="all", value="Показать все доступные команды", inline=False)
             embed.add_field(name="moderation", value="Показать команды модерации", inline=False)
+            embed.add_field(name="assistant", value="Показать команды помошники", inline=False)
             embed.add_field(name="music", value="Показать музыкальные команды", inline=False)
             embed.add_field(name="moderator", value="Показать команды модератора", inline=False)
             embed.add_field(name="user", value="Показать команды пользователя", inline=False)
@@ -165,7 +173,7 @@ async def ban_error(ctx, error):
         await ctx.channel.purge(limit=1)
         return
     else:
-        await ctx.send(f"{author.mention}, вы ввели комманду неверно!\nВоспользуйтесь {COMMAND_PREFIX}helpme")
+        await ctx.send(f"{author.mention}, вы ввели комманду неверно!\nВоспользуйтесь {COMMAND_PREFIX}help")
         time.sleep(1.25)
         await ctx.channel.purge(limit=1)
         return
