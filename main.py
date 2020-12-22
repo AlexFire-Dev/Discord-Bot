@@ -132,7 +132,7 @@ async def kick_error(ctx, error):
         await ctx.channel.purge(limit=1)
         return
     else:
-        await ctx.send(f"{author.mention}, вы ввели комманду неверно!\nВоспользуйтесь {COMMAND_PREFIX}helpme")
+        await ctx.send(f"{author.mention}, вы ввели комманду неверно!\nВоспользуйтесь {COMMAND_PREFIX}help")
         time.sleep(1.25)
         await ctx.channel.purge(limit=1)
         return
@@ -171,7 +171,7 @@ async def ban_error(ctx, error):
         return
 
 
-@client.command()                                           # Комманда "unban"
+@client.command()                                           # Команда "unban"
 @commands.has_permissions(administrator=True)
 async def unban(ctx, *, member):
     banned_users = await ctx.guild.bans()
@@ -200,13 +200,13 @@ async def unban_error(ctx, error):
         await ctx.channel.purge(limit=1)
         return
     else:
-        await ctx.send(f"{author.mention}, вы ввели команду неверно!\nВоспользуйтесь {COMMAND_PREFIX}helpme")
+        await ctx.send(f"{author.mention}, вы ввели команду неверно!\nВоспользуйтесь {COMMAND_PREFIX}help")
         time.sleep(5)
         await ctx.channel.purge(limit=1)
         return
 
 
-@client.command()                                           # Комманда "mute" [НЕ РАБОТАЕТ]
+@client.command()                                           # Команда "mute" [НЕ РАБОТАЕТ]
 @commands.has_permissions(administrator=True)
 async def mute(ctx, username: discord.Member):
     author = ctx.message.author
@@ -222,8 +222,38 @@ async def mute(ctx, username: discord.Member):
         await ctx.send(f"{author.mention}, пользователь {username.mention} замучен!")
 
 
+# Команды помошники
+@client.command()                                           # Команда "spam"
+@commands.has_permissions(administrator=True)
+async def spam(ctx, user: discord.Member, reason, amount=None):
+    await ctx.channel.purge(limit=1)
+    if amount is None:
+        amount = '1'
+    elif int(amount) > 10:
+        amount = "10"
+    for i in range(0, int(amount)):
+        await ctx.send(f"{user.mention} {reason}")
+        time.sleep(0.5)
+
+
+@spam.error
+async def spam_error(ctx, error):
+    await ctx.channel.purge(limit=1)
+    author = ctx.message.author
+    if isinstance(error, commands.MissingPermissions):
+        await ctx.send(f"{author.mention}, у Вас недостаточно прав для использования этой команды!\nНедостающее право: Доступ к командам помошникам!")
+        time.sleep(1)
+        await ctx.channel.purge(limit=1)
+        return
+    else:
+        await ctx.send(f"{author.mention}, вы ввели команду неверно!\nВоспользуйтесь {COMMAND_PREFIX}help")
+        time.sleep(5)
+        await ctx.channel.purge(limit=1)
+        return
+
+
 # Музыкальные комманды
-@client.command()                                           # Комманда "join"
+@client.command()                                           # Команда "join"
 @commands.has_permissions(administrator=True)
 async def join(ctx):
     await ctx.channel.purge(limit=1)
@@ -254,7 +284,7 @@ async def join_error(ctx, error):
         await ctx.channel.purge(limit=1)
 
 
-@client.command()                                           # Комманда "leave"
+@client.command()                                           # Команда "leave"
 @commands.has_permissions(administrator=True)
 async def leave(ctx):
     await ctx.channel.purge(limit=1)
