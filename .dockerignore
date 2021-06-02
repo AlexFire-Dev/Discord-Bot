@@ -1,0 +1,6 @@
+# Ignore everything
+**
+
+!main.py
+!requirements.txt
+!start.sh
