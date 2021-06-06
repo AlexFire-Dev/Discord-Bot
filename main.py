@@ -3,6 +3,7 @@ import time
 import discord
 from discord import Message
 
+
 from bot import commands, conf
 
 
@@ -31,9 +32,23 @@ class MyClient(discord.Client):
 
         if message.content.startswith(f'{PREFIX}hello'):
             await commands.hello_world(message)
+            return
 
         if message.content.startswith(f'{PREFIX}clear'):
             await commands.clear(message)
+            return
+
+        if message.content.startswith(f'{PREFIX}kick'):
+            await commands.kick(message)
+            return
+
+        if message.content.startswith(f'{PREFIX}unban'):
+            await commands.unban(self, message)
+            return
+
+        if message.content.startswith(f'{PREFIX}ban'):
+            await commands.ban(message)
+            return
 
 
 client = MyClient()
