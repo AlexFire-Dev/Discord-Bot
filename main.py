@@ -50,6 +50,14 @@ class MyClient(discord.Client):
             await commands.ban(message)
             return
 
+        if message.content.startswith(f'{PREFIX}join'):
+            await commands.join(self, message)
+            return
+
+        if message.content.startswith(f'{PREFIX}leave'):
+            await commands.leave(self, message)
+            return
+
 
 client = MyClient()
 client.run(BOT_TOKEN)

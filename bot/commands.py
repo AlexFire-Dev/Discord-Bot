@@ -1,5 +1,6 @@
 import discord
 from discord import Message
+from discord.utils import get
 
 from bot import conf
 
@@ -107,3 +108,37 @@ async def unban(client: discord.Client, message: Message):
     except:
         embed = discord.Embed(title=f'{PREFIX}unban', description='Команда введена неверно!', color=discord.Colour.green())
         await message.channel.send(embed=embed)
+
+
+async def join(client: discord.Client, message: Message):
+    if not message.author.guild_permissions.administrator:
+        return
+
+    await message.delete()
+
+    channel = message.author.voice.channel
+    if not channel:
+        await message.channel.send("Вы не в голосовом канале!")
+        return
+    voice = get(client.voice_clients, guild=message.guild)
+    if voice and voice.is_connected():
+        await voice.move_to(channel)
+    else:
+        voice = await channel.connect()
+
+    await message.channel.send(f"Я присоединился к {channel}, Sir!")
+
+
+async def leave(client: discord.Client, message: Message):
+    if not message.author.guild_permissions.administrator:
+        return
+
+    await message.delete()
+
+    voice = get(client.voice_clients, guild=message.guild)
+    if voice and voice.is_connected():
+        await voice.disconnect()
+
+        await message.channel.send(f"Я покинул {voice.channel}")
+    else:
+        await message.channel.send("Я не думаю, что я в голосовом канале!")
