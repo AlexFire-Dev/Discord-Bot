@@ -8,7 +8,7 @@ import os
 
 BOT_TOKEN = os.getenv("BOT_TOKEN")                          # Создание глобальных переменных
 COMMAND_PREFIX = os.getenv("COMMAND_PREFIX")
-client = commands.Bot(command_prefix=COMMAND_PREFIX, help_command=None)
+client = commands.Bot(command_prefix=COMMAND_PREFIX, help_command=help)
 
 
 @client.event                                               # Включение бота
