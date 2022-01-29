@@ -17,7 +17,7 @@ async def on_ready():
 
 
 @client.command()                                           # Команда "help"
-async def help(ctx, value=None):
+async def myhelp(ctx, value=None):
     await ctx.channel.purge(limit=1)
     if ctx.message.author.guild_permissions.administrator:
         if value == "all":
